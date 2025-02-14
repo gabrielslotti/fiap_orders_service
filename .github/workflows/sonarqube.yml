@@ -38,11 +38,11 @@ jobs:
           wget -q -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-6.2.1.4610-linux-x64.zip
           unzip sonar-scanner.zip
           echo "$(pwd)/sonar-scanner-6.2.1.4610-linux-x64/bin" >> $GITHUB_PATH
-          sonnar-scanner -v
+          ./sonar-scanner-6.2.1.4610-linux-x64/bin/sonar-scanner -v
 
       - name: Executar SonarScanner para SonarCloud
         run: |
-          sonar-scanner \
+          ./sonar-scanner-6.2.1.4610-linux-x64/bin/sonar-scanner \
             -Dsonar.organization=${{ secrets.SONAR_ORG }} \
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
