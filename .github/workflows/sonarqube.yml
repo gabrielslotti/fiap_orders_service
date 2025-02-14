@@ -35,7 +35,7 @@ jobs:
 
       - name: Instalar SonnarScanner
         run: |
-          wget -q -O sonar-scanner.zip wget -q -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-6.2.1.4610-linux-x64.zip\?_gl\=1\*13nsi9h\*_gcl_au\*MzI2NjEyMzczLjE3Mzk0OTI1Njg.\*_ga\*MjA2Mzc2ODYzLjE3Mzk0OTI1Njg.\*_ga_9JZ0GZ5TC6\*MTczOTU0OTkzNS4zLjEuMTczOTU1MDAwNS41MC4wLjA.
+          wget -q -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-6.2.1.4610-linux-x64.zip
           unzip sonar-scanner.zip
           echo "$(pwd)/sonar-scanner-6.2.1.4610-linux-x64/bin" >> $GITHUB_PATH
           sonnar-scanner -v
