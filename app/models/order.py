@@ -14,6 +14,7 @@ class Order(Base):
     __tablename__ = 'order'
 
     id: Mapped[Integer] = mapped_column(type_=Integer, primary_key=True)
+    mongo_id: Mapped[String(120)] = mapped_column(type_=String(120))
     customer_id: Mapped[Integer] = mapped_column(type_=Integer, nullable=True)
     status: Mapped[Integer] = mapped_column(ForeignKey("order_status.id"))
     # items: Mapped[JSONB] = mapped_column(type_=JSONB, nullable=False)

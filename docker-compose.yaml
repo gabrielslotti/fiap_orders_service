@@ -1,0 +1,72 @@
+version: '3.9'
+
+services:
+  database:
+    image: postgres:15-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: food
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "food"]
+      interval: 10s
+      retries: 5
+      timeout: 10s
+
+  mongodb:
+    image: mongo:4.0
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - mongodb_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    privileged: true
+    ports:
+      - "5672:5672"   # Porta padrão para conexões de aplicações
+      - "15672:15672" # UI do RabbitMQ Management
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+
+  app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_BASE: food
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_USER: admin
+      MONGO_PASS: admin
+      MONGO_BASE: food_orders
+      RABBIT_HOST: rabbitmq
+      RABBIT_PORT: 5672
+      RABBIT_USER: admin
+      RABBIT_PASS: admin
+
+volumes:
+  postgres_data:
+    driver: local
+  mongodb_data:
+    driver: local

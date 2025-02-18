@@ -64,10 +64,9 @@ def upgrade() -> None:
     op.create_table(
         'order',
         sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
+        sa.Column('mongo_id', sa.String(120)),
         sa.Column('customer_id', sa.Integer(), nullable=True),
         sa.Column('status', sa.Integer(), nullable=False),
-        # column items moved to nosql db
-        # sa.Column('items', JSONB(astext_type=sa.Text()), nullable=False),
         sa.PrimaryKeyConstraint('id', name=op.f('pk_order')),
         sa.ForeignKeyConstraint(('status',), ['order_status.id'], name=op.f('fk_order_status'))  # noqa
     )
