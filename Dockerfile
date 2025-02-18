@@ -1,5 +1,9 @@
 FROM python:3.10-alpine
 
+# Add non root user
+RUN addgroup -S nonroot \
+    && adduser -S -D nonroot -G nonroot
+
 # Install dependencies
 RUN apk add --no-cache \
     gcc \
@@ -8,20 +12,19 @@ RUN apk add --no-cache \
     postgresql-dev \
     libpq
 
-RUN addgroup -S nonroot \
-    && adduser -S nonroot -G nonroot
-
 # Install uv.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Copy the application into the container.
-COPY app alembic /app
-COPY alembic.ini entrypoint.sh pyproject.toml uv.lock /app
+COPY ./app /src/app
+COPY ./alembic /src/alembic
+COPY alembic.ini entrypoint.sh pyproject.toml uv.lock /src/
+RUN ls -l src
 
 # Install the application dependencies.
-WORKDIR /app
+WORKDIR /src
 RUN uv sync --frozen --no-cache
 
 # Run the application.
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x /src/entrypoint.sh
 CMD ["./entrypoint.sh"]
