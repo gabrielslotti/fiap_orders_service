@@ -1,10 +1,18 @@
 FROM python:3.10-alpine
 
+# Install dependencies
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    libffi-dev \
+    postgresql-dev \
+    libpq
+
 # Install uv.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Copy the application into the container.
-COPY --exclude=.env . /app
+COPY . /app
 
 # Install the application dependencies.
 WORKDIR /app
