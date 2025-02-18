@@ -22,29 +22,37 @@ class PikaClient:
     def __init__(self, process_callable=None):
         self.publish_queue_name = conf_settings.publish_queue
 
-        credentials = pika.PlainCredentials(
-            conf_settings.rabbit_user,
-            conf_settings.rabbit_pass
-        )
-        self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(
-                host=conf_settings.rabbit_host,
-                credentials=credentials
-            )
-        )
+        self.connection = None
+        self.channel = None
 
-        self.channel = self.connection.channel()
-        self.publish_queue = self.channel.queue_declare(queue=self.publish_queue_name)  # noqa
-        self.callback_queue = self.publish_queue.method.queue
-        self.response = None
+        # self.publish_queue = self.channel.queue_declare(queue=self.publish_queue_name)  # noqa
+        # self.callback_queue = self.publish_queue.method.queue
+        # self.response = None
 
         if process_callable:
             self.process_callable = process_callable
 
         logger.info('Pika connection initialized')
 
+    def _connect(self):
+        credentials = pika.PlainCredentials(
+            conf_settings.rabbit_user,
+            conf_settings.rabbit_pass
+        )
+
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(
+                host=conf_settings.rabbit_host,
+                credentials=credentials
+            )
+        )
+        self.channel = self.connection.channel()
+
     def send_message(self, message: dict):
         """Method to publish message to RabbitMQ"""
+        if not self.connection:
+            self._connect()
+
         self.channel.basic_publish(
             exchange='',
             routing_key=self.publish_queue_name,
