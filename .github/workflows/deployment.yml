@@ -1,0 +1,46 @@
+name: Build and Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Authenticate with Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_DEPLOY_SA }}
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Build and Push Docker image
+      run: |
+        IMAGE_URI="docker.io/${{ secrets.DOCKER_USERNAME }}/food-orders-service:latest"
+        echo "Logging in to Docker Hub"
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        docker build -t "$IMAGE_URI" .
+        docker push "$IMAGE_URI"
+
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run deploy my-service-prod  \
+          --image "docker.io/${{ secrets.DOCKER_USERNAME }}/food-orders-service:latest" \
+          --platform managed \
+          --region ${{ secrets.GCP_LOCATION }} \
+          --port 8000 \
+          --memory 512Mi \
+          --cpu 1 \
+          --max-instances 1 \
+          --project ${{ secrets.GCP_PROJECT_ID  }} \
+          --service-account ${{ secrets.GCP_PROJECT_SA_NAME }} \
+          --set-env-vars ENV=prod \

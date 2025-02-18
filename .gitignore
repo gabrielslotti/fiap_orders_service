@@ -24,3 +24,6 @@ test.db
 .pytest_cache/
 .coverage
 coverage.xml
+
+# flake8
+.flake8

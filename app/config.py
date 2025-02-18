@@ -23,6 +23,12 @@ class Settings(BaseSettings):
     env: str = "dev"
     debug: bool = True
 
+    # Variables for RabbitMQ
+    publish_queue: str = "food_orders"
+    rabbit_host: str = "127.0.0.1"
+    rabbit_user: str = ""
+    rabbit_pass: str = ""
+
     # Variables for the database
     db_host: str = "localhost"
     db_port: int = 5432
@@ -45,6 +51,22 @@ class Settings(BaseSettings):
             user=self.db_user,
             password=self.db_pass,
             path=f"/{self.db_base}",
+        )
+
+    mongo_host: str = "127.0.0.1"
+    mongo_port: int = 27017
+    mongo_user: str = ""
+    mongo_pass: str = ""
+    mongo_base: str = "food_orders"
+
+    @property
+    def mongo_url(self) -> URL:
+        return URL.build(
+            scheme="mongodb",
+            host=self.mongo_host,
+            port=self.mongo_port,
+            user=self.mongo_user,
+            password=self.mongo_pass,
         )
 
     model_config = SettingsConfigDict(

@@ -1,9 +1,30 @@
 import pytest
 from sqlalchemy import text
 from fastapi.testclient import TestClient
+from unittest.mock import MagicMock, patch
 from app.database import Base, get_db
-from app import main
 from app.tests.db import engine, override_get_db
+
+
+with patch("pika.BlockingConnection") as mock_pika_conn, \
+     patch("pymongo.MongoClient") as mock_mongo_client:
+
+    # Configura os mocks
+    mock_pika_instance = MagicMock()
+    mock_pika_conn.return_value = mock_pika_instance
+
+    mock_mongo_instance = MagicMock()
+    mock_mongo_client.return_value = mock_mongo_instance
+
+    from app import main
+
+
+@pytest.fixture(autouse=True)
+def mock_dependencies():
+    yield {
+        "pika": mock_pika_instance,
+        "mongo": mock_mongo_instance
+    }
 
 
 @pytest.fixture()
