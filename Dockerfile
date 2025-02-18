@@ -12,7 +12,8 @@ RUN apk add --no-cache \
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Copy the application into the container.
-COPY . /app
+COPY app alembic /app
+COPY alembic.ini entrypoint.sh pyproject.toml uv.lock /app
 
 # Install the application dependencies.
 WORKDIR /app
