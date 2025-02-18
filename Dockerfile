@@ -8,6 +8,9 @@ RUN apk add --no-cache \
     postgresql-dev \
     libpq
 
+RUN addgroup -S nonroot \
+    && adduser -S nonroot -G nonroot
+
 # Install uv.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
