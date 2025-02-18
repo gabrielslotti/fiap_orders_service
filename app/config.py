@@ -26,8 +26,8 @@ class Settings(BaseSettings):
     # Variables for RabbitMQ
     publish_queue: str = "food_orders"
     rabbit_host: str = "127.0.0.1"
-    rabbit_user: str = ""
-    rabbit_pass: str = ""
+    rabbit_user: str = "admin"
+    rabbit_pass: str = "admin"
 
     # Variables for the database
     db_host: str = "localhost"
@@ -55,8 +55,8 @@ class Settings(BaseSettings):
 
     mongo_host: str = "127.0.0.1"
     mongo_port: int = 27017
-    mongo_user: str = ""
-    mongo_pass: str = ""
+    mongo_user: str = "admin"
+    mongo_pass: str = "admin"
     mongo_base: str = "food_orders"
 
     @property
