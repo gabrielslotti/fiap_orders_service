@@ -1,9 +1,5 @@
 FROM python:3.10-alpine
 
-# Add non root user
-RUN addgroup -S nonroot \
-    && adduser -S -D nonroot -G nonroot
-
 # Install dependencies
 RUN apk add --no-cache \
     gcc \
