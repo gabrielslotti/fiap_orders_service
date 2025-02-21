@@ -54,8 +54,17 @@ def register_order(
         db_session.commit()
         db_session.refresh(db_order)
 
-        # Build response
-        response = OrderCreateResponse(
+        # Post message on RabbitMQ
+        request.app.pika_client.send_message({
+            "id": db_order.id,
+            "external_id": db_order.mongo_id,
+            "status": order_status.description,
+            "items": items
+        })
+
+        logger.debug(f"Order {db_order.mongo_id} created")
+
+        return OrderCreateResponse(
             id=db_order.id,
             mongo_id=db_order.mongo_id,
             customer_id=db_order.customer_id,
@@ -63,13 +72,6 @@ def register_order(
             items=items,
             price=final_price,
         )
-
-        # Post message on RabbitMQ
-        request.app.pika_client.send_message(response.model_dump())
-
-        logger.debug(f"Order {db_order.mongo_id} created")
-
-        return response
 
     except SQLAlchemyError as exc:
         logger.exception(str(exc))
