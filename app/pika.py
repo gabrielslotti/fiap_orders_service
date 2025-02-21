@@ -19,18 +19,14 @@ conf_settings = get_settings()
 
 class PikaClient:
 
-    def __init__(self, process_callable=None):
+    def __init__(self):
         self.publish_queue_name = conf_settings.publish_queue
 
         self.connection = None
         self.channel = None
-
-        # self.publish_queue = self.channel.queue_declare(queue=self.publish_queue_name)  # noqa
-        # self.callback_queue = self.publish_queue.method.queue
+        self.publish_queue = None
+        self.callback_queue = None
         # self.response = None
-
-        if process_callable:
-            self.process_callable = process_callable
 
         logger.info('Pika connection initialized')
 
@@ -47,6 +43,8 @@ class PikaClient:
             )
         )
         self.channel = self.connection.channel()
+        self.publish_queue = self.channel.queue_declare(queue=self.publish_queue_name)  # noqa
+        self.callback_queue = self.publish_queue.method.queue
 
     def send_message(self, message: dict):
         """Method to publish message to RabbitMQ"""
