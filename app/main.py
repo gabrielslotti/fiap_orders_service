@@ -1,13 +1,16 @@
 # import asyncio
 from functools import lru_cache
+
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.exc import SQLAlchemyError
+from fastapi.responses import JSONResponse
 from loguru import logger
-from app.routers import customer, items, order
-from app.pika import PikaClient
+from sqlalchemy.exc import SQLAlchemyError
+
 from app.mongo import Mongo
+from app.pika import PikaClient
+from app.routers import customer, items, order
+
 from . import config
 
 
@@ -55,7 +58,5 @@ def health():
     """
     Health router.
     """
-    result = {
-        "status": "ok"
-    }
+    result = {"status": "ok"}
     return result
