@@ -101,4 +101,8 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    pass
+    op.drop_table("customer")
+    op.drop_table("order")
+    op.drop_table("order_status")
+    op.drop_table("items_category")
+    op.drop_table("items")
