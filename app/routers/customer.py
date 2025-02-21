@@ -1,11 +1,12 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app.models.customer import Customer as CustomerModel
-from app.schemas.customer import Customer, CustomerRegister, CustomerIdentify
-from app.schemas.http import DefaultResponse
-from app.main import logger
-from .. import database
 
+from app.main import logger
+from app.models.customer import Customer as CustomerModel
+from app.schemas.customer import Customer, CustomerIdentify, CustomerRegister
+from app.schemas.http import DefaultResponse
+
+from .. import database
 
 router = APIRouter()
 

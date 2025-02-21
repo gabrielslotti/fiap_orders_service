@@ -1,13 +1,12 @@
-from fastapi import APIRouter, HTTPException, Depends, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
-from app.models.order import (
-    Order as OrderModel,
-    OrderStatus as OrderStatusModel,
-)
-from app.schemas.order import OrderCreate, OrderCreateResponse, OrderUpdate
-from app.main import logger
-from .. import database
 
+from app.main import logger
+from app.models.order import Order as OrderModel
+from app.models.order import OrderStatus as OrderStatusModel
+from app.schemas.order import OrderCreate, OrderCreateResponse, OrderUpdate
+
+from .. import database
 
 router = APIRouter()
 
@@ -38,8 +37,8 @@ def register_order(
     # Get item category id
     order_status = (
         db_session.query(OrderStatusModel)
-                  .filter(OrderStatusModel.description == "Recebido")
-                  .one_or_none()
+        .filter(OrderStatusModel.description == "Recebido")
+        .one_or_none()
     )
 
     order_raw["status"] = order_status.id
@@ -53,12 +52,14 @@ def register_order(
     db_session.refresh(db_order)
 
     # Post message on RabbitMQ
-    request.app.pika_client.send_message({
-        "id": db_order.id,
-        "external_id": db_order.mongo_id,
-        "status": order_status.description,
-        "items": items
-    })
+    request.app.pika_client.send_message(
+        {
+            "id": db_order.id,
+            "external_id": db_order.mongo_id,
+            "status": order_status.description,
+            "items": items,
+        }
+    )
 
     logger.debug(f"Order {db_order.mongo_id} created")
 
@@ -92,8 +93,8 @@ def update_order(order: OrderUpdate, db_session: Session = Depends(database.get_
     # Get item category id
     order_status = (
         db_session.query(OrderStatusModel)
-                  .filter(OrderStatusModel.description == order.status)
-                  .one_or_none()
+        .filter(OrderStatusModel.description == order.status)
+        .one_or_none()
     )
 
     db_order.status = order_status.id

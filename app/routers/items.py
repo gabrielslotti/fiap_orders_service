@@ -1,15 +1,15 @@
-from fastapi import APIRouter, HTTPException, Depends, status
-from sqlalchemy.orm import Session
 from typing import List
-from app.models.items import (
-    Items as ItemsModel,
-    ItemsCategory as ItemsCategoryModel,
-)
-from app.schemas.items import Item, ItemRegister, ItemCategoryEnum
-from app.schemas.http import DefaultResponse
-from app.main import logger
-from .. import database
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+from app.main import logger
+from app.models.items import Items as ItemsModel
+from app.models.items import ItemsCategory as ItemsCategoryModel
+from app.schemas.http import DefaultResponse
+from app.schemas.items import Item, ItemCategoryEnum, ItemRegister
+
+from .. import database
 
 router = APIRouter()
 
@@ -69,8 +69,8 @@ def update_item(item: Item, db_session: Session = Depends(database.get_db)):
 
     category = (
         db_session.query(ItemsCategoryModel)
-                  .filter(ItemsCategoryModel.description == item.category)
-                  .one_or_none()
+        .filter(ItemsCategoryModel.description == item.category)
+        .one_or_none()
     )
 
     db_item.title = item.title
@@ -130,16 +130,17 @@ def list_items_by_category(
     """
     items = (
         db_session.query(ItemsModel)
-                  .with_entities(
-                    ItemsModel.id,
-                    ItemsModel.title,
-                    ItemsModel.description,
-                    ItemsModel.amount,
-                    ItemsModel.price,
-                    ItemsCategoryModel.description.label("category"))
-                  .join(ItemsCategoryModel)
-                  .filter(ItemsCategoryModel.description == category)
-                  .all()
+        .with_entities(
+            ItemsModel.id,
+            ItemsModel.title,
+            ItemsModel.description,
+            ItemsModel.amount,
+            ItemsModel.price,
+            ItemsCategoryModel.description.label("category"),
+        )
+        .join(ItemsCategoryModel)
+        .filter(ItemsCategoryModel.description == category)
+        .all()
     )
 
     return items

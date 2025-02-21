@@ -1,8 +1,11 @@
-import pika
-import uuid
 import json
+import uuid
 from functools import lru_cache
+
+import pika
+
 from app.main import logger
+
 from . import config
 
 
@@ -28,22 +31,22 @@ class PikaClient:
         self.callback_queue = None
         # self.response = None
 
-        logger.info('Pika connection initialized')
+        logger.info("Pika connection initialized")
 
     def _connect(self):
         credentials = pika.PlainCredentials(
-            conf_settings.rabbit_user,
-            conf_settings.rabbit_pass
+            conf_settings.rabbit_user, conf_settings.rabbit_pass
         )
 
         self.connection = pika.BlockingConnection(
             pika.ConnectionParameters(
-                host=conf_settings.rabbit_host,
-                credentials=credentials
+                host=conf_settings.rabbit_host, credentials=credentials
             )
         )
         self.channel = self.connection.channel()
-        self.publish_queue = self.channel.queue_declare(queue=self.publish_queue_name)  # noqa
+        self.publish_queue = self.channel.queue_declare(
+            queue=self.publish_queue_name
+        )  # noqa
         self.callback_queue = self.publish_queue.method.queue
 
     def send_message(self, message: dict):
@@ -52,12 +55,11 @@ class PikaClient:
             self._connect()
 
         self.channel.basic_publish(
-            exchange='',
+            exchange="",
             routing_key=self.publish_queue_name,
             properties=pika.BasicProperties(
-                reply_to=self.callback_queue,
-                correlation_id=str(uuid.uuid4())
+                reply_to=self.callback_queue, correlation_id=str(uuid.uuid4())
             ),
-            body=json.dumps(message)
+            body=json.dumps(message),
         )
         logger.debug(f"[RMQ] Publish: {message}")
