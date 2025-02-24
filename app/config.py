@@ -69,6 +69,8 @@ class Settings(BaseSettings):
             password=self.mongo_pass,
         )
 
+    payment_service_url: str = "http://0.0.0.0:8001"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
