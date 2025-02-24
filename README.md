@@ -3,3 +3,7 @@
 
 ## Arquitetura
 ![image](https://github.com/user-attachments/assets/b483ef6f-5cad-42a5-807d-e3b0a7d039d2)
+
+
+## Vídeos
+[Explicação da Arquitetura, Testes e Deploy](https://youtu.be/iFhyxGboZ6o)
