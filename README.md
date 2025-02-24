@@ -7,4 +7,5 @@
 
 ## Vídeos
 [Explicação da Arquitetura, Testes e Deploy](https://youtu.be/iFhyxGboZ6o)
+
 [Demonstração do Funcionamento da Aplicação](https://youtu.be/qgGzgluKPw8)
